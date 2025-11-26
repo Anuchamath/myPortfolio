@@ -6,13 +6,15 @@ import {
 } from 'lucide-react';
 
 /**
- * ANUCHAMATH SATHSARA - PORTFOLIO V2.4 (PERFORMANCE FIX)
- * Fixes: Optimized Custom Cursor Logic (Removed State Lag)
+ * ANUCHAMATH SATHSARA - PORTFOLIO V2.5 (FINAL POLISH)
+ * Fixes: 
+ * 1. Instant Custom Cursor (Removed laggy transition)
+ * 2. Auto-generated Favicon
+ * 3. Mobile Performance
  */
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('home');
-  // Removed mousePosition state to prevent re-renders on every move
   const cursorRef = useRef(null); 
   const [cursorVariant, setCursorVariant] = useState('default');
   const [isMobile, setIsMobile] = useState(false);
@@ -21,30 +23,40 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
-  // --- GLOBAL STYLES & SEO ---
+  // --- GLOBAL STYLES & SEO & FAVICON ---
   useEffect(() => {
-    document.title = "Anuchamath Sathsara | SK Anuchamath | Creative Designer & Cinematographer";
-    
-    // Prevent horizontal scroll on body
+    document.title = "Anuchamath Sathsara | Portfolio";
     document.body.style.overflowX = 'hidden';
     
-    // Inject Structured Data (JSON-LD)
-    const schemaData = {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Anuchamath Sathsara",
-      "alternateName": ["SK Anuchamath", "S.K.A Sathsara"],
-      "jobTitle": "Multidisciplinary Designer",
-      "url": "https://anuchamath.com"
-    };
+    // 1. DYNAMIC FAVICON GENERATOR
+    const setFavicon = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      
+      // Draw background circle
+      ctx.beginPath();
+      ctx.arc(32, 32, 30, 0, 2 * Math.PI);
+      ctx.fillStyle = '#22d3ee'; // Cyan
+      ctx.fill();
+      
+      // Draw "A" text
+      ctx.font = 'bold 40px Arial';
+      ctx.fillStyle = '#000000';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('A', 32, 34);
 
-    const script = document.createElement('script');
-    script.type = "application/ld+json";
-    script.text = JSON.stringify(schemaData);
-    document.head.appendChild(script);
+      const link = document.createElement('link');
+      link.type = 'image/x-icon';
+      link.rel = 'shortcut icon';
+      link.href = canvas.toDataURL();
+      document.getElementsByTagName('head')[0].appendChild(link);
+    };
+    setFavicon();
 
     return () => {
-      document.head.removeChild(script);
       document.body.style.overflowX = 'auto'; 
     };
   }, []);
@@ -54,12 +66,11 @@ const App = () => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
-    // Direct DOM manipulation for high-performance cursor tracking
+    // 2. INSTANT CURSOR TRACKING (No Lag)
     const mouseMove = (e) => {
       if (cursorRef.current) {
-        const { clientX, clientY } = e;
-        // Directly update the style without triggering a React re-render
-        cursorRef.current.style.transform = `translate(${clientX - 16}px, ${clientY - 16}px)`;
+        // We set transform directly for 60fps performance without React re-renders
+        cursorRef.current.style.transform = `translate(${e.clientX - 16}px, ${e.clientY - 16}px)`;
       }
     };
     window.addEventListener("mousemove", mouseMove);
@@ -113,7 +124,7 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-cyan-400 selection:text-black relative transition-colors duration-700 pb-24 md:pb-0 animate-fade-in">
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-cyan-400 selection:text-black relative transition-colors duration-700 pb-24 md:pb-0 animate-fade-in cursor-none">
       
       {/* 1. ANIMATED BACKGROUND */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -123,16 +134,16 @@ const App = () => {
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
       </div>
 
-      {/* 2. CUSTOM CURSOR - Using Ref for performance */}
+      {/* 2. CUSTOM CURSOR - REMOVED TRANSITION FOR INSTANT FEEL */}
       <div 
         ref={cursorRef}
         className="hidden md:block fixed top-0 left-0 w-8 h-8 pointer-events-none z-50 mix-blend-difference"
         style={{
-          transition: 'transform 0.1s ease-out', // Smoother catch-up
-          willChange: 'transform' // Hardware acceleration hint
+            // REMOVED 'transition' to fix lag/floaty feeling
+            willChange: 'transform' 
         }}
       >
-        <div className={`w-full h-full rounded-full border border-white/80 transition-all duration-300 
+        <div className={`w-full h-full rounded-full border border-white/80 transition-transform duration-200 ease-out
           ${cursorVariant === 'hover' ? 'scale-[2.5] bg-white' : 'scale-100'} 
           ${cursorVariant === 'card' ? 'scale-[3] bg-cyan-400/20 border-cyan-400 backdrop-blur-sm' : ''}
         `} />
@@ -141,7 +152,7 @@ const App = () => {
       {/* 3. NAVBAR */}
       <nav className="fixed top-0 left-0 w-full p-6 md:p-10 flex justify-between items-center z-40 bg-gradient-to-b from-[#050505] to-transparent md:bg-none">
         <div 
-          className="text-xl md:text-2xl font-black tracking-tighter uppercase cursor-pointer relative group"
+          className="text-xl md:text-2xl font-black tracking-tighter uppercase cursor-none relative group"
           onClick={() => setActiveTab('home')}
           onMouseEnter={() => setCursorVariant('hover')}
           onMouseLeave={() => setCursorVariant('default')}
@@ -150,14 +161,14 @@ const App = () => {
           <span className="absolute -bottom-2 left-0 w-0 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 group-hover:w-full transition-all duration-300" />
         </div>
         
-        <div className="hidden md:flex gap-1 bg-white/5 backdrop-blur-md p-1 rounded-full border border-white/10">
+        <div className="hidden md:flex gap-1 bg-white/5 backdrop-blur-md p-1 rounded-full border border-white/10 cursor-none">
           {['home', 'achievements', 'contact'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               onMouseEnter={() => setCursorVariant('hover')}
               onMouseLeave={() => setCursorVariant('default')}
-              className={`px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 
+              className={`px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 cursor-none
                 ${activeTab === tab ? 'bg-white text-black shadow-lg shadow-white/10' : 'text-gray-400 hover:text-white'}`}
             >
               {tab}
@@ -184,7 +195,7 @@ const App = () => {
           ))}
       </div>
 
-      <main className="pt-24 md:pt-32 px-4 md:px-12 flex flex-col relative z-10 max-w-7xl mx-auto">
+      <main className="pt-24 md:pt-32 px-4 md:px-12 flex flex-col relative z-10 max-w-7xl mx-auto cursor-none">
         {renderContent()}
       </main>
 
@@ -202,6 +213,18 @@ const App = () => {
         .animation-delay-4000 { animation-delay: 4s; }
         .animate-fill { animation: fillBar 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        
+        /* FORCE HIDE DEFAULT CURSOR */
+        body, a, button, input {
+            cursor: none !important;
+        }
+        
+        /* RE-ENABLE CURSOR ON MOBILE */
+        @media (max-width: 768px) {
+            body, a, button, input {
+                cursor: auto !important;
+            }
+        }
       `}</style>
     </div>
   );
@@ -238,7 +261,7 @@ const Home = ({ setCursorVariant }) => {
         {roles.map((role, index) => (
           <div 
             key={index}
-            className="group relative border-b border-white/5 py-4 md:py-8 flex items-center justify-between cursor-none transition-all duration-300"
+            className="group relative border-b border-white/5 py-4 md:py-8 flex items-center justify-between transition-all duration-300"
             onMouseEnter={() => setCursorVariant('hover')}
             onMouseLeave={() => setCursorVariant('default')}
           >
@@ -275,7 +298,7 @@ const Home = ({ setCursorVariant }) => {
            {skills.map((skill, index) => (
              <div 
                 key={index} 
-                className="group cursor-default"
+                className="group cursor-none"
                 onMouseEnter={() => setCursorVariant('card')}
                 onMouseLeave={() => setCursorVariant('default')}
              >
@@ -343,13 +366,13 @@ const Contact = ({ setCursorVariant }) => {
         <h1 className="text-4xl sm:text-6xl md:text-8xl font-black uppercase leading-[0.9] tracking-tighter mb-6 md:mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600">Start The<br />Project</h1>
       </div>
       <div className="max-w-3xl mx-auto w-full grid grid-cols-1 gap-4 px-2 md:px-0">
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-6 md:p-8 rounded-2xl text-center group hover:bg-white/10 transition-all cursor-pointer" onMouseEnter={() => setCursorVariant('card')} onMouseLeave={() => setCursorVariant('default')}>
+        <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-6 md:p-8 rounded-2xl text-center group hover:bg-white/10 transition-all cursor-none" onMouseEnter={() => setCursorVariant('card')} onMouseLeave={() => setCursorVariant('default')}>
           <div className="text-xs md:text-sm font-mono text-gray-500 mb-2 uppercase">Direct Email</div>
-          <a href="mailto:hello@anuchamath.com" className="text-xl sm:text-2xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent group-hover:from-white group-hover:to-white transition-all break-all md:break-normal">hello@anuchamath.com</a>
+          <a href="mailto:hello@anuchamath.com" className="text-xl sm:text-2xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent group-hover:from-white group-hover:to-white transition-all break-all md:break-normal cursor-none">hello@anuchamath.com</a>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-2 md:mt-4">
             {socials.map((social, idx) => (
-                <a key={idx} href={social.link} target="_blank" rel="noreferrer" className={`flex flex-col items-center justify-center p-4 md:p-6 border border-white/10 rounded-xl bg-white/5 backdrop-blur-sm transition-all duration-300 group hover:-translate-y-1 ${social.color}`} onMouseEnter={() => setCursorVariant('hover')} onMouseLeave={() => setCursorVariant('default')}>
+                <a key={idx} href={social.link} target="_blank" rel="noreferrer" className={`flex flex-col items-center justify-center p-4 md:p-6 border border-white/10 rounded-xl bg-white/5 backdrop-blur-sm transition-all duration-300 group hover:-translate-y-1 ${social.color} cursor-none`} onMouseEnter={() => setCursorVariant('hover')} onMouseLeave={() => setCursorVariant('default')}>
                     <div className="mb-2 md:mb-3 text-gray-300 group-hover:text-white transition-colors scale-75 md:scale-100">{social.icon}</div>
                     <span className="uppercase tracking-wider text-[10px] md:text-xs font-bold text-gray-500 group-hover:text-white">{social.label}</span>
                 </a>
