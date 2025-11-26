@@ -3,21 +3,35 @@
 @tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #050505;
+  color: white;
+  cursor: none; /* Keeps custom cursor logic working */
 }
 
-/* Custom Scrollbar */
+/* --- CUSTOM NEON SCROLLBAR --- */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #000;
+  background: #050505; /* Matches page background */
 }
+
 ::-webkit-scrollbar-thumb {
   background: #333;
-  border-radius: 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
 
+::-webkit-scrollbar-thumb:hover {
+  background: #22d3ee; /* Cyan neon color */
+  box-shadow: 0 0 10px #22d3ee; /* Glowing effect */
+}
+
+/* Selection Color */
+::selection {
+  background: #22d3ee;
+  color: #000;
 }
