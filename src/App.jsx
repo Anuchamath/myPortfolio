@@ -6,8 +6,8 @@ import {
 } from 'lucide-react';
 
 /**
- * ANUCHAMATH SATHSARA - PORTFOLIO V2.2 (FIXED ANIMATIONS)
- * Fixes: Custom Cursor Visibility & Text Readability
+ * ANUCHAMATH SATHSARA - PORTFOLIO V2.3 (FIXED SCROLLBARS)
+ * Fixes: Double Scrollbar Issue & Overflow Handling
  */
 
 const App = () => {
@@ -20,9 +20,12 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
-  // --- SEO & AEO CONFIGURATION ---
+  // --- GLOBAL STYLES & SEO ---
   useEffect(() => {
     document.title = "Anuchamath Sathsara | SK Anuchamath | Creative Designer & Cinematographer";
+    
+    // Prevent horizontal scroll on body to avoid double scrollbars
+    document.body.style.overflowX = 'hidden';
     
     // Inject Structured Data (JSON-LD)
     const schemaData = {
@@ -41,6 +44,7 @@ const App = () => {
 
     return () => {
       document.head.removeChild(script);
+      document.body.style.overflowX = 'auto'; // Cleanup
     };
   }, []);
 
@@ -103,17 +107,18 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-cyan-400 selection:text-black overflow-x-hidden relative transition-colors duration-700 pb-24 md:pb-0 animate-fade-in">
+    // Removed 'overflow-x-hidden' from here to prevent double scrollbar behavior
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-cyan-400 selection:text-black relative transition-colors duration-700 pb-24 md:pb-0 animate-fade-in">
       
       {/* 1. ANIMATED BACKGROUND */}
-      <div className="fixed inset-0 z-0">
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-blob" />
         <div className="absolute top-[20%] right-[-10%] w-[40%] h-[60%] bg-cyan-600 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-blob animation-delay-2000" />
         <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] bg-pink-600 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-blob animation-delay-4000" />
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
       </div>
 
-      {/* 2. CUSTOM CURSOR FIX */}
+      {/* 2. CUSTOM CURSOR */}
       <div 
         className="hidden md:block fixed top-0 left-0 w-8 h-8 pointer-events-none z-50 mix-blend-difference"
         style={{
@@ -173,7 +178,7 @@ const App = () => {
           ))}
       </div>
 
-      <main className="pt-24 md:pt-32 px-4 md:px-12 min-h-screen flex flex-col relative z-10 max-w-7xl mx-auto">
+      <main className="pt-24 md:pt-32 px-4 md:px-12 flex flex-col relative z-10 max-w-7xl mx-auto">
         {renderContent()}
       </main>
 
