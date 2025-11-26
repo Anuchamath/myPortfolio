@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# This part ensures that if you add routing later, reloading pages works
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
