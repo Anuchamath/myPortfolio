@@ -6,11 +6,11 @@ import {
 } from 'lucide-react';
 
 /**
- * ANUCHAMATH SATHSARA - PORTFOLIO V2.5 (FINAL POLISH)
- * Fixes: 
- * 1. Instant Custom Cursor (Removed laggy transition)
- * 2. Auto-generated Favicon
- * 3. Mobile Performance
+ * ANUCHAMATH SATHSARA - PORTFOLIO V2.6 (DOMAIN SEO)
+ * Updates: 
+ * 1. Specific Domain Integration (anuchamath-sathsara.camdvr.org)
+ * 2. Open Graph Tags for Social Sharing
+ * 3. Canonical URL
  */
 
 const App = () => {
@@ -25,29 +25,66 @@ const App = () => {
 
   // --- GLOBAL STYLES & SEO & FAVICON ---
   useEffect(() => {
-    document.title = "Anuchamath Sathsara | Portfolio";
+    // 1. SET PAGE TITLE
+    document.title = "Anuchamath Sathsara | Creative Designer & Cinematographer";
     document.body.style.overflowX = 'hidden';
     
-    // 1. DYNAMIC FAVICON GENERATOR
+    // 2. SET META TAGS & CANONICAL URL
+    const metaConfig = [
+      { name: "description", content: "Portfolio of Anuchamath Sathsara (S.K.A Sathsara). Professional Graphic Designer, Cinematographer, and Video Editor based in Sri Lanka." },
+      { name: "keywords", content: "Anuchamath Sathsara, SK Anuchamath, S.K.A Sathsara, Graphic Designer Sri Lanka, Cinematographer, Video Editor, UI/UX Designer" },
+      // Open Graph / Facebook / WhatsApp
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://anuchamath-sathsara.camdvr.org/" },
+      { property: "og:title", content: "Anuchamath Sathsara | Creative Portfolio" },
+      { property: "og:description", content: "Multidisciplinary Designer & Visual Storyteller." },
+      { property: "og:image", content: "https://anuchamath-sathsara.camdvr.org/og-image.jpg" }, // Ideally upload an image to public folder named og-image.jpg
+    ];
+
+    metaConfig.forEach(tag => {
+      let element;
+      if (tag.name) {
+        element = document.querySelector(`meta[name="${tag.name}"]`);
+        if (!element) {
+          element = document.createElement('meta');
+          element.name = tag.name;
+          document.head.appendChild(element);
+        }
+      } else if (tag.property) {
+        element = document.querySelector(`meta[property="${tag.property}"]`);
+        if (!element) {
+          element = document.createElement('meta');
+          element.setAttribute('property', tag.property);
+          document.head.appendChild(element);
+        }
+      }
+      element.setAttribute('content', tag.content);
+    });
+
+    // Canonical Link
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = "https://anuchamath-sathsara.camdvr.org/";
+
+    // 3. DYNAMIC FAVICON GENERATOR
     const setFavicon = () => {
       const canvas = document.createElement('canvas');
       canvas.width = 64;
       canvas.height = 64;
       const ctx = canvas.getContext('2d');
-      
-      // Draw background circle
       ctx.beginPath();
       ctx.arc(32, 32, 30, 0, 2 * Math.PI);
       ctx.fillStyle = '#22d3ee'; // Cyan
       ctx.fill();
-      
-      // Draw "A" text
       ctx.font = 'bold 40px Arial';
       ctx.fillStyle = '#000000';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('A', 32, 34);
-
       const link = document.createElement('link');
       link.type = 'image/x-icon';
       link.rel = 'shortcut icon';
@@ -56,8 +93,29 @@ const App = () => {
     };
     setFavicon();
 
+    // 4. INJECT STRUCTURED DATA (JSON-LD)
+    const schemaData = {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Anuchamath Sathsara",
+      "alternateName": ["SK Anuchamath", "S.K.A Sathsara"],
+      "url": "https://anuchamath-sathsara.camdvr.org",
+      "jobTitle": "Multidisciplinary Designer",
+      "sameAs": [
+        "https://github.com",
+        "https://instagram.com",
+        "https://linkedin.com",
+        "https://facebook.com"
+      ]
+    };
+    const script = document.createElement('script');
+    script.type = "application/ld+json";
+    script.text = JSON.stringify(schemaData);
+    document.head.appendChild(script);
+
     return () => {
       document.body.style.overflowX = 'auto'; 
+      document.head.removeChild(script);
     };
   }, []);
 
@@ -66,10 +124,8 @@ const App = () => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
-    // 2. INSTANT CURSOR TRACKING (No Lag)
     const mouseMove = (e) => {
       if (cursorRef.current) {
-        // We set transform directly for 60fps performance without React re-renders
         cursorRef.current.style.transform = `translate(${e.clientX - 16}px, ${e.clientY - 16}px)`;
       }
     };
@@ -134,14 +190,11 @@ const App = () => {
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
       </div>
 
-      {/* 2. CUSTOM CURSOR - REMOVED TRANSITION FOR INSTANT FEEL */}
+      {/* 2. CUSTOM CURSOR */}
       <div 
         ref={cursorRef}
         className="hidden md:block fixed top-0 left-0 w-8 h-8 pointer-events-none z-50 mix-blend-difference"
-        style={{
-            // REMOVED 'transition' to fix lag/floaty feeling
-            willChange: 'transform' 
-        }}
+        style={{ willChange: 'transform' }}
       >
         <div className={`w-full h-full rounded-full border border-white/80 transition-transform duration-200 ease-out
           ${cursorVariant === 'hover' ? 'scale-[2.5] bg-white' : 'scale-100'} 
@@ -213,18 +266,8 @@ const App = () => {
         .animation-delay-4000 { animation-delay: 4s; }
         .animate-fill { animation: fillBar 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
-        
-        /* FORCE HIDE DEFAULT CURSOR */
-        body, a, button, input {
-            cursor: none !important;
-        }
-        
-        /* RE-ENABLE CURSOR ON MOBILE */
-        @media (max-width: 768px) {
-            body, a, button, input {
-                cursor: auto !important;
-            }
-        }
+        body, a, button, input { cursor: none !important; }
+        @media (max-width: 768px) { body, a, button, input { cursor: auto !important; } }
       `}</style>
     </div>
   );
