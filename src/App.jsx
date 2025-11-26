@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   MousePointer2, ArrowUpRight, Instagram, Linkedin, Twitter, 
   Award, Camera, Video, PenTool, Monitor, Github, Facebook, Layers, Image as ImageIcon,
@@ -6,13 +6,14 @@ import {
 } from 'lucide-react';
 
 /**
- * ANUCHAMATH SATHSARA - PORTFOLIO V2.3 (FIXED SCROLLBARS)
- * Fixes: Double Scrollbar Issue & Overflow Handling
+ * ANUCHAMATH SATHSARA - PORTFOLIO V2.4 (PERFORMANCE FIX)
+ * Fixes: Optimized Custom Cursor Logic (Removed State Lag)
  */
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('home');
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  // Removed mousePosition state to prevent re-renders on every move
+  const cursorRef = useRef(null); 
   const [cursorVariant, setCursorVariant] = useState('default');
   const [isMobile, setIsMobile] = useState(false);
   
@@ -24,7 +25,7 @@ const App = () => {
   useEffect(() => {
     document.title = "Anuchamath Sathsara | SK Anuchamath | Creative Designer & Cinematographer";
     
-    // Prevent horizontal scroll on body to avoid double scrollbars
+    // Prevent horizontal scroll on body
     document.body.style.overflowX = 'hidden';
     
     // Inject Structured Data (JSON-LD)
@@ -44,7 +45,7 @@ const App = () => {
 
     return () => {
       document.head.removeChild(script);
-      document.body.style.overflowX = 'auto'; // Cleanup
+      document.body.style.overflowX = 'auto'; 
     };
   }, []);
 
@@ -53,8 +54,13 @@ const App = () => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
+    // Direct DOM manipulation for high-performance cursor tracking
     const mouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      if (cursorRef.current) {
+        const { clientX, clientY } = e;
+        // Directly update the style without triggering a React re-render
+        cursorRef.current.style.transform = `translate(${clientX - 16}px, ${clientY - 16}px)`;
+      }
     };
     window.addEventListener("mousemove", mouseMove);
 
@@ -107,7 +113,6 @@ const App = () => {
   }
 
   return (
-    // Removed 'overflow-x-hidden' from here to prevent double scrollbar behavior
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-cyan-400 selection:text-black relative transition-colors duration-700 pb-24 md:pb-0 animate-fade-in">
       
       {/* 1. ANIMATED BACKGROUND */}
@@ -118,12 +123,13 @@ const App = () => {
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
       </div>
 
-      {/* 2. CUSTOM CURSOR */}
+      {/* 2. CUSTOM CURSOR - Using Ref for performance */}
       <div 
+        ref={cursorRef}
         className="hidden md:block fixed top-0 left-0 w-8 h-8 pointer-events-none z-50 mix-blend-difference"
         style={{
-          transform: `translate(${mousePosition.x - 16}px, ${mousePosition.y - 16}px)`,
-          transition: 'transform 0.05s linear',
+          transition: 'transform 0.1s ease-out', // Smoother catch-up
+          willChange: 'transform' // Hardware acceleration hint
         }}
       >
         <div className={`w-full h-full rounded-full border border-white/80 transition-all duration-300 
