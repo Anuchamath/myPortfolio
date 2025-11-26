@@ -6,5 +6,6 @@ export default defineConfig({
   plugins: [react()],
   // REPLACE 'repo-name' WITH YOUR GITHUB REPOSITORY NAME
   // Example: base: '/anuchamath-portfolio/',
-  base: '/repo-name/', 
+  base: '/', 
+
 })
