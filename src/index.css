@@ -6,81 +6,77 @@
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   background-color: #050505;
   color: white;
-  color-scheme: dark; /* Tells browser to use dark scrollbars natively if custom ones fail */
+  color-scheme: dark;
 }
 
-/* 1. MODERN SCROLL & LAYOUT RESET */
+/* 1. RESET & SCROLL FIXES */
 html {
   width: 100%;
-  height: 100%;
-  scroll-behavior: smooth; /* Native smooth scrolling */
-  -webkit-text-size-adjust: 100%;
+  /* Removed height: 100% to allow content to grow naturally */
+  scroll-behavior: smooth;
+  overflow-x: hidden; /* Prevent side scroll */
 }
 
 body {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: 100%;
+  min-height: 100vh; /* Ensure full height */
   background-color: #050505;
+  overflow-x: hidden;
   
-  /* CRITICAL SCROLL FIXES */
-  overflow-x: hidden;          /* No side scroll */
-  overflow-y: auto;            /* Standard vertical scroll */
-  -webkit-font-smoothing: antialiased; /* Crisper text */
+  /* Standard scrolling behavior */
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  /* OPTIMIZED TOUCH (Prevents lag/stuck feeling on mobile) */
-  touch-action: pan-y; 
-  -webkit-overflow-scrolling: touch; /* iOS momentum scrolling */
+  /* Mobile Momentum */
+  -webkit-overflow-scrolling: touch; 
 }
 
-/* Ensure the React Root allows scrolling */
+/* 2. ROOT CONTAINER FIX (The culprit was here) */
 #root {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; /* Contains child overflows */
+  width: 100%;
+  position: relative;
+  /* REMOVED 'overflow: hidden' - This was blocking your scroll! */
 }
 
-/* 2. TRENDY "GHOST" NEON SCROLLBAR */
-/* Works on Chrome, Edge, Safari, Opera */
-
+/* 3. MODERN "GHOST" SCROLLBAR (Desktop) */
 ::-webkit-scrollbar {
-  width: 6px; /* Ultra thin, modern look */
-  height: 6px; /* For horizontal scrollbars if any */
+  width: 8px; /* Easy to grab on desktop */
+  height: 8px;
 }
 
-/* Transparent Track - Looks like floating content */
 ::-webkit-scrollbar-track {
   background: transparent; 
-  margin: 4px 0;
 }
 
-/* The Glowing Neon Thumb */
 ::-webkit-scrollbar-thumb {
   background: #333;
-  border-radius: 20px; /* Pill shape */
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(5px);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #22d3ee; /* Cyan Neon */
-  box-shadow: 0 0 15px rgba(34, 211, 238, 0.6); /* Glow effect */
+  background: #22d3ee; /* Cyan Glow */
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
 }
 
-/* 3. FIREFOX SCROLLBAR STYLING */
-/* Firefox uses different properties */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: #333 transparent;
+/* 4. MOBILE OPTIMIZATIONS */
+@media (max-width: 768px) {
+  /* Hide scrollbar UI on mobile but KEEP functionality */
+  ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+  
+  body {
+    /* Ensure touch actions work */
+    touch-action: pan-y;
+  }
 }
 
-/* 4. TEXT SELECTION HIGHLIGHT */
 ::selection {
-  background: rgba(34, 211, 238, 0.3); /* Transparent Cyan */
+  background: rgba(34, 211, 238, 0.3);
   color: #ffffff;
-  text-shadow: 0 0 5px #22d3ee;
 }
