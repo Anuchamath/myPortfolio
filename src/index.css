@@ -8,74 +8,43 @@
   color: white;
 }
 
-/* 1. CRITICAL FIX: Reset to standard browser scrolling */
-/* Removing 'height: 100%' and 'overflow-y' fixes the "stuck" scroll on mobile */
-html, body {
-  width: 100%;
-  overflow-x: hidden; /* Keeps side-scroll disabled */
-  margin: 0;
-  padding: 0;
-  -webkit-font-smoothing: antialiased;
+/* 1. GLOBAL RESET & SCROLL FIX */
+html {
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  scroll-behavior: smooth;
 }
 
 body {
+  /* Removed 'overflow-x: hidden' from body to prevent double-scrollbar conflict */
   position: relative;
   min-height: 100vh;
-  /* Removed 'overflow-y: auto' to let the window handle scrolling naturally */
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  background-color: #050505;
 }
 
-/* 2. DESKTOP: Custom Neon Scrollbar */
-@media (min-width: 769px) {
-  :root {
-    cursor: none; /* Custom cursor logic */
-  }
+/* 2. GLOBAL CUSTOM SCROLLBAR (Works on Desktop, Native on Mobile) */
+/* By not wrapping this in a media query, we allow browser defaults to handle mobile if they prefer, 
+   or use this style if supported, but we ensure we don't HIDE it. */
 
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #050505; 
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #22d3ee; 
-    box-shadow: 0 0 10px #22d3ee;
-  }
+::-webkit-scrollbar {
+  width: 8px; /* Slightly wider for better visibility */
 }
 
-/* 3. MOBILE: HIDE SCROLLBAR UI (App-like feel) */
-@media (max-width: 768px) {
-  :root {
-    cursor: auto; /* Normal touch cursor */
-  }
+::-webkit-scrollbar-track {
+  background: #050505; 
+}
 
-  /* Hide scrollbar UI but keep functionality */
-  html, body {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* IE and Edge */
-  }
-  
-  /* Chrome, Safari, Opera */
-  body::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
-    background: transparent;
-  }
-  
-  ::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    background: transparent;
-  }
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #22d3ee; 
+  box-shadow: 0 0 10px #22d3ee;
 }
 
 ::selection {
