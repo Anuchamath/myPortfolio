@@ -6,11 +6,10 @@ import {
 } from 'lucide-react';
 
 /**
- * ANUCHAMATH SATHSARA - PORTFOLIO V2.6 (DOMAIN SEO)
- * Updates: 
- * 1. Specific Domain Integration (anuchamath-sathsara.camdvr.org)
- * 2. Open Graph Tags for Social Sharing
- * 3. Canonical URL
+ * ANUCHAMATH SATHSARA - PORTFOLIO V2.8 (MOBILE BACKGROUND FIX)
+ * Updates:
+ * 1. Fixed "White Area" at bottom of mobile screens (Overscroll fix).
+ * 2. Used 'dvh' (Dynamic Viewport Height) for better mobile browser support.
  */
 
 const App = () => {
@@ -23,62 +22,34 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
-  // --- GLOBAL STYLES & SEO & FAVICON ---
+  // --- INITIALIZATION & SEO ---
   useEffect(() => {
-    // 1. SET PAGE TITLE
-    document.title = "Anuchamath Sathsara | Creative Designer & Cinematographer";
-    document.body.style.overflowX = 'hidden';
+    document.title = "Anuchamath Sathsara | Creative Designer";
     
-    // 2. SET META TAGS & CANONICAL URL
-    const metaConfig = [
-      { name: "description", content: "Portfolio of Anuchamath Sathsara (S.K.A Sathsara). Professional Graphic Designer, Cinematographer, and Video Editor based in Sri Lanka." },
-      { name: "keywords", content: "Anuchamath Sathsara, SK Anuchamath, S.K.A Sathsara, Graphic Designer Sri Lanka, Cinematographer, Video Editor, UI/UX Designer" },
-      // Open Graph / Facebook / WhatsApp
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://anuchamath-sathsara.camdvr.org/" },
-      { property: "og:title", content: "Anuchamath Sathsara | Creative Portfolio" },
-      { property: "og:description", content: "Multidisciplinary Designer & Visual Storyteller." },
-      { property: "og:image", content: "https://anuchamath-sathsara.camdvr.org/og-image.jpg" }, // Ideally upload an image to public folder named og-image.jpg
-    ];
+    // 1. CRITICAL FIX: Set HTML/Body background to black to prevent white overscroll
+    document.documentElement.style.backgroundColor = '#050505';
+    document.body.style.backgroundColor = '#050505';
+    
+    document.documentElement.style.scrollBehavior = 'smooth';
+    document.body.style.overflowX = 'hidden';
 
-    metaConfig.forEach(tag => {
-      let element;
-      if (tag.name) {
-        element = document.querySelector(`meta[name="${tag.name}"]`);
-        if (!element) {
-          element = document.createElement('meta');
-          element.name = tag.name;
-          document.head.appendChild(element);
-        }
-      } else if (tag.property) {
-        element = document.querySelector(`meta[property="${tag.property}"]`);
-        if (!element) {
-          element = document.createElement('meta');
-          element.setAttribute('property', tag.property);
-          document.head.appendChild(element);
-        }
-      }
-      element.setAttribute('content', tag.content);
-    });
+    // 2. DETECT MOBILE
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
 
-    // Canonical Link
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.rel = 'canonical';
-      document.head.appendChild(canonical);
-    }
-    canonical.href = "https://anuchamath-sathsara.camdvr.org/";
-
-    // 3. DYNAMIC FAVICON GENERATOR
+    // 3. GENERATE FAVICON
     const setFavicon = () => {
       const canvas = document.createElement('canvas');
-      canvas.width = 64;
+      canvas.width = 64; 
       canvas.height = 64;
       const ctx = canvas.getContext('2d');
       ctx.beginPath();
       ctx.arc(32, 32, 30, 0, 2 * Math.PI);
-      ctx.fillStyle = '#22d3ee'; // Cyan
+      ctx.fillStyle = '#22d3ee';
       ctx.fill();
       ctx.font = 'bold 40px Arial';
       ctx.fillStyle = '#000000';
@@ -93,36 +64,15 @@ const App = () => {
     };
     setFavicon();
 
-    // 4. INJECT STRUCTURED DATA (JSON-LD)
-    const schemaData = {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Anuchamath Sathsara",
-      "alternateName": ["SK Anuchamath", "S.K.A Sathsara"],
-      "url": "https://anuchamath-sathsara.camdvr.org",
-      "jobTitle": "Multidisciplinary Designer",
-      "sameAs": [
-        "https://github.com",
-        "https://instagram.com",
-        "https://linkedin.com",
-        "https://facebook.com"
-      ]
-    };
-    const script = document.createElement('script');
-    script.type = "application/ld+json";
-    script.text = JSON.stringify(schemaData);
-    document.head.appendChild(script);
-
     return () => {
-      document.body.style.overflowX = 'auto'; 
-      document.head.removeChild(script);
+      window.removeEventListener('resize', checkMobile);
+      document.documentElement.style.scrollBehavior = 'auto';
     };
   }, []);
 
+  // --- MOUSE TRACKING (DESKTOP ONLY) ---
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
+    if (isMobile) return;
 
     const mouseMove = (e) => {
       if (cursorRef.current) {
@@ -131,6 +81,13 @@ const App = () => {
     };
     window.addEventListener("mousemove", mouseMove);
 
+    return () => {
+      window.removeEventListener("mousemove", mouseMove);
+    };
+  }, [isMobile]);
+
+  // --- LOADING SIMULATION ---
+  useEffect(() => {
     const interval = setInterval(() => {
       setLoadingProgress(prev => {
         if (prev >= 100) {
@@ -140,13 +97,8 @@ const App = () => {
         }
         return prev + Math.floor(Math.random() * 5) + 1; 
       });
-    }, 50);
-
-    return () => {
-      window.removeEventListener("mousemove", mouseMove);
-      window.removeEventListener('resize', checkMobile);
-      clearInterval(interval);
-    };
+    }, 40);
+    return () => clearInterval(interval);
   }, []);
 
   const renderContent = () => {
@@ -159,7 +111,7 @@ const App = () => {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center text-white cursor-none">
+      <div className="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center text-white cursor-none touch-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/20 rounded-full blur-[80px] animate-pulse" />
         <div className="relative z-10 flex flex-col items-center">
             <div className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4 animate-pulse text-center px-4">
@@ -172,7 +124,7 @@ const App = () => {
                 />
             </div>
             <div className="font-mono text-xs text-cyan-400 tracking-[0.2em]">
-                SYSTEM INITIALIZING {loadingProgress}%
+                LOADING {loadingProgress}%
             </div>
         </div>
       </div>
@@ -180,13 +132,14 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-cyan-400 selection:text-black relative transition-colors duration-700 pb-24 md:pb-0 animate-fade-in cursor-none">
+    // FIX: Changed min-h-screen to min-h-[100dvh] to fix mobile browser bottom gap
+    <div className="min-h-[100dvh] bg-[#050505] text-white font-sans selection:bg-cyan-400 selection:text-black relative transition-colors duration-700 pb-32 md:pb-0 animate-fade-in cursor-auto md:cursor-none">
       
       {/* 1. ANIMATED BACKGROUND */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-blob" />
-        <div className="absolute top-[20%] right-[-10%] w-[40%] h-[60%] bg-cyan-600 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] bg-pink-600 rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-blob animation-delay-4000" />
+      <div className="fixed inset-0 z-0 pointer-events-none transform-gpu">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-600 rounded-full mix-blend-screen filter blur-[80px] md:blur-[120px] opacity-20 animate-blob" />
+        <div className="absolute top-[20%] right-[-10%] w-[40%] h-[60%] bg-cyan-600 rounded-full mix-blend-screen filter blur-[80px] md:blur-[120px] opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] bg-pink-600 rounded-full mix-blend-screen filter blur-[80px] md:blur-[120px] opacity-20 animate-blob animation-delay-4000" />
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
       </div>
 
@@ -202,10 +155,10 @@ const App = () => {
         `} />
       </div>
 
-      {/* 3. NAVBAR */}
-      <nav className="fixed top-0 left-0 w-full p-6 md:p-10 flex justify-between items-center z-40 bg-gradient-to-b from-[#050505] to-transparent md:bg-none">
+      {/* 3. DESKTOP NAVBAR */}
+      <nav className="hidden md:flex fixed top-0 left-0 w-full p-10 justify-between items-center z-40">
         <div 
-          className="text-xl md:text-2xl font-black tracking-tighter uppercase cursor-none relative group"
+          className="text-2xl font-black tracking-tighter uppercase cursor-none relative group"
           onClick={() => setActiveTab('home')}
           onMouseEnter={() => setCursorVariant('hover')}
           onMouseLeave={() => setCursorVariant('default')}
@@ -214,7 +167,7 @@ const App = () => {
           <span className="absolute -bottom-2 left-0 w-0 h-1 bg-gradient-to-r from-purple-500 to-cyan-500 group-hover:w-full transition-all duration-300" />
         </div>
         
-        <div className="hidden md:flex gap-1 bg-white/5 backdrop-blur-md p-1 rounded-full border border-white/10 cursor-none">
+        <div className="flex gap-1 bg-white/5 backdrop-blur-md p-1 rounded-full border border-white/10 cursor-none">
           {['home', 'achievements', 'contact'].map((tab) => (
             <button
               key={tab}
@@ -230,8 +183,9 @@ const App = () => {
         </div>
       </nav>
 
-      {/* 4. MOBILE NAV */}
-      <div className="md:hidden fixed bottom-6 left-6 right-6 z-50 bg-[#111]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-2 flex justify-around items-center shadow-2xl shadow-black/50">
+      {/* 4. MOBILE NAVBAR (With bottom safe-area fix) */}
+      <div className="md:hidden fixed bottom-6 left-4 right-4 z-50">
+        <div className="bg-[#111]/90 backdrop-blur-xl border border-white/10 rounded-2xl p-2 flex justify-around items-center shadow-2xl shadow-black/80 ring-1 ring-white/5">
           {[
             { id: 'home', icon: <HomeIcon size={20} />, label: 'Home' },
             { id: 'achievements', icon: <Award size={20} />, label: 'Awards' },
@@ -239,20 +193,43 @@ const App = () => {
           ].map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center justify-center w-full py-2 rounded-xl transition-all duration-300 ${activeTab === item.id ? 'bg-white text-black' : 'text-gray-400'}`}
+              onClick={() => {
+                setActiveTab(item.id);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={`flex flex-col items-center justify-center w-full py-3 rounded-xl transition-all duration-300 active:scale-95
+                ${activeTab === item.id ? 'bg-white text-black shadow-lg' : 'text-gray-400 hover:bg-white/5'}`}
             >
-              {item.icon}
+              <div className={`${activeTab === item.id ? 'scale-110' : ''} transition-transform duration-200`}>
+                {item.icon}
+              </div>
               <span className="text-[10px] uppercase font-bold mt-1 tracking-wider">{item.label}</span>
             </button>
           ))}
+        </div>
       </div>
 
-      <main className="pt-24 md:pt-32 px-4 md:px-12 flex flex-col relative z-10 max-w-7xl mx-auto cursor-none">
+      {/* 5. MAIN CONTENT */}
+      <main className="pt-8 md:pt-32 px-4 md:px-12 flex flex-col relative z-10 max-w-7xl mx-auto cursor-auto md:cursor-none">
+        {/* Mobile Logo Header */}
+        <div className="md:hidden pt-8 pb-4 mb-4 flex justify-center">
+             <span className="text-2xl font-black tracking-tighter uppercase text-white">Anuchamath.</span>
+        </div>
+        
         {renderContent()}
       </main>
 
       <style>{`
+        /* Smooth Scrolling */
+        html { scroll-behavior: smooth; }
+        
+        /* Fix for white overscroll area on mobile */
+        html, body {
+            background-color: #050505;
+            overscroll-behavior-y: none; /* Prevents bounce effect that shows white background */
+            -webkit-overflow-scrolling: touch;
+        }
+
         @keyframes blob {
           0% { transform: translate(0px, 0px) scale(1); }
           33% { transform: translate(30px, -50px) scale(1.1); }
@@ -261,13 +238,17 @@ const App = () => {
         }
         @keyframes fillBar { from { width: 0%; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .animate-blob { animation: blob 10s infinite; }
         .animation-delay-2000 { animation-delay: 2s; }
         .animation-delay-4000 { animation-delay: 4s; }
         .animate-fill { animation: fillBar 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
-        body, a, button, input { cursor: none !important; }
-        @media (max-width: 768px) { body, a, button, input { cursor: auto !important; } }
+        
+        body, a, button, input { cursor: none; }
+        @media (max-width: 768px) { 
+            body, a, button, input { cursor: auto !important; } 
+        }
       `}</style>
     </div>
   );
@@ -308,11 +289,10 @@ const Home = ({ setCursorVariant }) => {
             onMouseEnter={() => setCursorVariant('hover')}
             onMouseLeave={() => setCursorVariant('default')}
           >
-            {/* TEXT FIX: Increased visibility and simplified animation */}
             <div className={`text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter text-white/20 group-hover:text-white transition-all duration-500 ease-out z-10
-              group-hover:translate-x-2 md:group-hover:translate-x-4`}
+              translate-x-0 md:group-hover:translate-x-4`}
             >
-              <span className={`block group-hover:${role.color} transition-colors duration-300 group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]`}>
+              <span className={`block group-hover:${role.color} transition-colors duration-300`}>
                 {role.title}
               </span>
             </div>
@@ -341,7 +321,7 @@ const Home = ({ setCursorVariant }) => {
            {skills.map((skill, index) => (
              <div 
                 key={index} 
-                className="group cursor-none"
+                className="group cursor-auto md:cursor-none"
                 onMouseEnter={() => setCursorVariant('card')}
                 onMouseLeave={() => setCursorVariant('default')}
              >
@@ -409,13 +389,13 @@ const Contact = ({ setCursorVariant }) => {
         <h1 className="text-4xl sm:text-6xl md:text-8xl font-black uppercase leading-[0.9] tracking-tighter mb-6 md:mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600">Start The<br />Project</h1>
       </div>
       <div className="max-w-3xl mx-auto w-full grid grid-cols-1 gap-4 px-2 md:px-0">
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-6 md:p-8 rounded-2xl text-center group hover:bg-white/10 transition-all cursor-none" onMouseEnter={() => setCursorVariant('card')} onMouseLeave={() => setCursorVariant('default')}>
+        <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-6 md:p-8 rounded-2xl text-center group hover:bg-white/10 transition-all cursor-auto md:cursor-none" onMouseEnter={() => setCursorVariant('card')} onMouseLeave={() => setCursorVariant('default')}>
           <div className="text-xs md:text-sm font-mono text-gray-500 mb-2 uppercase">Direct Email</div>
-          <a href="mailto:hello@anuchamath.com" className="text-xl sm:text-2xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent group-hover:from-white group-hover:to-white transition-all break-all md:break-normal cursor-none">hello@anuchamath.com</a>
+          <a href="mailto:hello@anuchamath.com" className="text-xl sm:text-2xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent group-hover:from-white group-hover:to-white transition-all break-all md:break-normal cursor-auto md:cursor-none">hello@anuchamath.com</a>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-2 md:mt-4">
             {socials.map((social, idx) => (
-                <a key={idx} href={social.link} target="_blank" rel="noreferrer" className={`flex flex-col items-center justify-center p-4 md:p-6 border border-white/10 rounded-xl bg-white/5 backdrop-blur-sm transition-all duration-300 group hover:-translate-y-1 ${social.color} cursor-none`} onMouseEnter={() => setCursorVariant('hover')} onMouseLeave={() => setCursorVariant('default')}>
+                <a key={idx} href={social.link} target="_blank" rel="noreferrer" className={`flex flex-col items-center justify-center p-4 md:p-6 border border-white/10 rounded-xl bg-white/5 backdrop-blur-sm transition-all duration-300 group hover:-translate-y-1 ${social.color} cursor-auto md:cursor-none`} onMouseEnter={() => setCursorVariant('hover')} onMouseLeave={() => setCursorVariant('default')}>
                     <div className="mb-2 md:mb-3 text-gray-300 group-hover:text-white transition-colors scale-75 md:scale-100">{social.icon}</div>
                     <span className="uppercase tracking-wider text-[10px] md:text-xs font-bold text-gray-500 group-hover:text-white">{social.label}</span>
                 </a>
