@@ -391,7 +391,7 @@ const Contact = ({ setCursorVariant }) => {
       <div className="max-w-3xl mx-auto w-full grid grid-cols-1 gap-4 px-2 md:px-0">
         <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-6 md:p-8 rounded-2xl text-center group hover:bg-white/10 transition-all cursor-auto md:cursor-none" onMouseEnter={() => setCursorVariant('card')} onMouseLeave={() => setCursorVariant('default')}>
           <div className="text-xs md:text-sm font-mono text-gray-500 mb-2 uppercase">Direct Email</div>
-          <a href="anuchamath24@gmail.com" className="text-xl sm:text-2xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent group-hover:from-white group-hover:to-white transition-all break-all md:break-normal cursor-auto md:cursor-none">hello@anuchamath.com</a>
+          <a href="anuchamath24@gmail.com" className="text-xl sm:text-2xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent group-hover:from-white group-hover:to-white transition-all break-all md:break-normal cursor-auto md:cursor-none">anuchamath24@gmail.com</a>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-2 md:mt-4">
             {socials.map((social, idx) => (
@@ -408,5 +408,6 @@ const Contact = ({ setCursorVariant }) => {
 };
 
 export default App;
+
 
 
