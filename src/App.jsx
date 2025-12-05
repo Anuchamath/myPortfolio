@@ -377,10 +377,10 @@ const Achievements = ({ setCursorVariant }) => {
 
 const Contact = ({ setCursorVariant }) => {
   const socials = [
-    { label: "Github", icon: <Github size={24}/>, link: "https://github.com", color: "hover:bg-gray-800" },
-    { label: "Instagram", icon: <Instagram size={24}/>, link: "https://instagram.com", color: "hover:bg-pink-600" },
-    { label: "Facebook", icon: <Facebook size={24}/>, link: "https://facebook.com", color: "hover:bg-blue-600" },
-    { label: "LinkedIn", icon: <Linkedin size={24}/>, link: "https://linkedin.com", color: "hover:bg-blue-700" },
+    { label: "Github", icon: <Github size={24}/>, link: "https://github.com/Anuchamath", color: "hover:bg-gray-800" },
+    { label: "Instagram", icon: <Instagram size={24}/>, link: "https://www.instagram.com/_anuchamath_/", color: "hover:bg-pink-600" },
+    { label: "Facebook", icon: <Facebook size={24}/>, link: "https://www.facebook.com/cr0wne6anu/", color: "hover:bg-blue-600" },
+    { label: "LinkedIn", icon: <Linkedin size={24}/>, link: "https://www.linkedin.com/in/anuchamath-sathsara/", color: "hover:bg-blue-700" },
   ];
   return (
     <div className="h-full flex flex-col justify-center animate-fade-in-up py-6 md:py-12">
@@ -408,3 +408,4 @@ const Contact = ({ setCursorVariant }) => {
 };
 
 export default App;
+
